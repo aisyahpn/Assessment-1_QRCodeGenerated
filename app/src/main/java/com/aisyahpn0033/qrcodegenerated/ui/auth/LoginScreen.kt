@@ -1,7 +1,9 @@
 package com.aisyahpn0033.qrcodegenerated.ui.auth
 
+import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -21,59 +23,66 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.aisyahpn0033.qrcodegenerated.R
 import com.aisyahpn0033.qrcodegenerated.Screen
+import com.aisyahpn0033.qrcodegenerated.ui.theme.AppTheme
 
-// Fungsi utama untuk menampilkan LoginScreen dan mengatur navigasi saat login atau register
+// Fungsi utama LoginScreen yang menangani navigasi saat login berhasil atau klik register
 @Composable
 fun LoginScreen(navController: NavController) {
     LoginScreenContent(
         onLoginSuccess = {
-            // Navigasi ke HomeScreen jika login sukses
             navController.navigate(Screen.Home.route)
         },
         onRegisterClick = {
-            // Navigasi ke RegisterScreen jika tombol register diklik
             navController.navigate(Screen.Register.route)
         }
     )
 }
 
-// Fungsi tanpa parameter untuk keperluan Preview
-@Preview(showBackground = true, showSystemUi = true)
+// Fungsi Preview agar bisa dilihat dalam mode terang dan gelap
+@Preview(showSystemUi = true, showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreenContent(
-        onLoginSuccess = {}, // Dummy lambda
-        onRegisterClick = {}
-    )
+    AppTheme { // Ganti dengan nama tema kamu
+        LoginScreenContent(
+            onLoginSuccess = {},
+            onRegisterClick = {}
+        )
+    }
 }
 
-// UI utama dari LoginScreen yang bisa dipakai ulang (termasuk di preview)
+// UI utama dari halaman login
 @Composable
 fun LoginScreenContent(
-    onLoginSuccess: () -> Unit, // Callback jika login sukses
-    onRegisterClick: () -> Unit // Callback jika user ingin register
+    onLoginSuccess: () -> Unit,
+    onRegisterClick: () -> Unit
 ) {
-    val context = LocalContext.current // Mendapatkan context Android saat ini
-    var email by remember { mutableStateOf("") } // State untuk input email
-    var password by remember { mutableStateOf("") } // State untuk input password
-    var emailError by remember { mutableStateOf(false) } // Menandai apakah email salah
-    var passwordError by remember { mutableStateOf(false) } // Menandai apakah password salah
+    val context = LocalContext.current
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
 
+    // Surface sebagai latar utama mengikuti dark/light mode
     Surface(
-        modifier = Modifier.fillMaxSize(), // Menyesuaikan ukuran layar
-        color = MaterialTheme.colorScheme.background // Gunakan warna latar dari tema
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        color = MaterialTheme.colorScheme.background
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center // Posisikan konten di tengah layar
+            contentAlignment = Alignment.Center
         ) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .wrapContentHeight(),
                 elevation = CardDefaults.cardElevation(8.dp),
-                shape = MaterialTheme.shapes.extraLarge, // Sudut membulat
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                shape = MaterialTheme.shapes.extraLarge,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
             ) {
                 Column(
                     modifier = Modifier
@@ -81,7 +90,7 @@ fun LoginScreenContent(
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Logo aplikasi di atas form login
+                    // Logo aplikasi
                     Image(
                         painter = painterResource(id = R.drawable.login_logo),
                         contentDescription = "Logo",
@@ -90,7 +99,7 @@ fun LoginScreenContent(
                             .padding(bottom = 16.dp)
                     )
 
-                    // Judul teks selamat datang
+                    // Judul sambutan
                     Text(
                         text = "Welcome Back!",
                         style = MaterialTheme.typography.headlineSmall,
@@ -99,20 +108,27 @@ fun LoginScreenContent(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Input email
+                    // Input Email
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
-                        label = { Text("Email") },
+                        label = { Text("Email", color = MaterialTheme.colorScheme.onSurface) },
                         leadingIcon = {
-                            Icon(Icons.Default.Email, contentDescription = "Email Icon")
+                            Icon(Icons.Default.Email, contentDescription = "Email Icon", tint = MaterialTheme.colorScheme.onSurface)
                         },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                         isError = emailError,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            errorBorderColor = MaterialTheme.colorScheme.error,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            errorTextColor = MaterialTheme.colorScheme.error
+                        )
                     )
-                    // Menampilkan error jika email tidak valid
                     if (emailError) {
                         Text(
                             "Email tidak valid",
@@ -124,21 +140,28 @@ fun LoginScreenContent(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Input password
+                    // Input Password
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = { Text("Password") },
+                        label = { Text("Password", color = MaterialTheme.colorScheme.onSurface) },
                         leadingIcon = {
-                            Icon(Icons.Default.Lock, contentDescription = "Password Icon")
+                            Icon(Icons.Default.Lock, contentDescription = "Password Icon", tint = MaterialTheme.colorScheme.onSurface)
                         },
                         singleLine = true,
-                        visualTransformation = PasswordVisualTransformation(), // Agar input password jadi bintang
+                        visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         isError = passwordError,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            errorBorderColor = MaterialTheme.colorScheme.error,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            errorTextColor = MaterialTheme.colorScheme.error
+                        )
                     )
-                    // Menampilkan error jika password kurang dari 6 karakter
                     if (passwordError) {
                         Text(
                             "Password harus lebih dari 6 karakter",
@@ -153,12 +176,10 @@ fun LoginScreenContent(
                     // Tombol Login
                     Button(
                         onClick = {
-                            // Validasi input
                             emailError = email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
                             passwordError = password.length < 6
 
                             if (!emailError && !passwordError) {
-                                // Jika valid, tampilkan toast dan lanjut ke halaman berikutnya
                                 Toast.makeText(context, "Login Berhasil!", Toast.LENGTH_SHORT).show()
                                 onLoginSuccess()
                             }
@@ -173,9 +194,12 @@ fun LoginScreenContent(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Teks untuk berpindah ke halaman register
-                    TextButton(onClick = { onRegisterClick() }) {
-                        Text("Belum punya akun? Register")
+                    // Tombol navigasi ke halaman Register
+                    TextButton(onClick = onRegisterClick) {
+                        Text(
+                            "Belum punya akun? Register",
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.aisyahpn0033.qrcodegenerated.ui.auth
 
+import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.aisyahpn0033.qrcodegenerated.R
 import com.aisyahpn0033.qrcodegenerated.Screen
+import com.aisyahpn0033.qrcodegenerated.ui.theme.AppTheme
 
 // Fungsi utama layar register dengan navigasi
 @Composable
@@ -33,13 +35,16 @@ fun RegisterScreen(navController: NavController) {
 }
 
 // Preview untuk tampilan design tanpa navController
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showSystemUi = true, showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun RegisterScreenPreview() {
-    RegisterScreenContent(
-        onRegisterSuccess = {},
-        onLoginClick = {}
-    )
+    AppTheme { // Ganti dengan nama tema kamu
+        RegisterScreenContent(
+            onRegisterSuccess = {},
+            onLoginClick = {}
+        )
+    }
 }
 
 // Fungsi utama isi layar register
@@ -268,3 +273,5 @@ fun RegisterScreenContent(
         }
     }
 }
+
+// Sumber https://youtu.be/OlO58LDfN14?si=uEk6RejxsVWD45w5, https://youtu.be/PeUERQJnHdI?si=TtmyXJZP_-EXUyVt

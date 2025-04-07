@@ -1,19 +1,21 @@
+// Package lokasi file
 package com.aisyahpn0033.qrcodegenerated.ui.home
 
+// Import library dan komponen yang dibutuhkan
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -21,39 +23,41 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.ThumbDown
+import androidx.compose.material3.Icon
 import com.aisyahpn0033.qrcodegenerated.QRCodeGenerator
 import com.aisyahpn0033.qrcodegenerated.Screen
+import com.aisyahpn0033.qrcodegenerated.ui.theme.AppTheme
 
+// Fungsi utama yang menampilkan HomeScreen, menerima NavController untuk navigasi
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
     val context = LocalContext.current
+    var inputText by remember { mutableStateOf("") } // Menyimpan input teks dari user
+    var qrBitmap by remember { mutableStateOf<Bitmap?>(null) } // Menyimpan hasil bitmap QR
+    var expanded by remember { mutableStateOf(false) } // Menentukan apakah menu dropdown terbuka
 
-    // State untuk input teks yang akan diubah menjadi QR code
-    var inputText by remember { mutableStateOf("") }
-
-    // State untuk menyimpan gambar bitmap hasil generate QR code
-    var qrBitmap by remember { mutableStateOf<Bitmap?>(null) }
-
-    // State untuk menampilkan atau menyembunyikan dropdown menu di AppBar
-    var expanded by remember { mutableStateOf(false) }
-
-    // Fungsi untuk generate QR code dari teks
+    // Fungsi untuk menghasilkan QR Code dari inputText
     fun generateQR() {
         qrBitmap = QRCodeGenerator.generateQRCode(inputText)
     }
 
-    // Scaffold untuk kerangka layout dengan TopAppBar dan isi konten
+    // Struktur Scaffold untuk topAppBar dan konten utama
     Scaffold(
         topBar = {
+            // App Bar bagian atas layar
             TopAppBar(
                 title = { Text("Home") },
                 actions = {
+                    // Tombol menu dropdown
                     IconButton(onClick = { expanded = true }) {
                         Icon(Icons.Filled.MoreVert, contentDescription = "Menu")
                     }
+                    // Menu dropdown untuk navigasi dan share
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        // Navigasi ke halaman About
                         DropdownMenuItem(
                             text = { Text("About") },
                             onClick = {
@@ -61,7 +65,6 @@ fun HomeScreen(navController: NavController) {
                                 navController.navigate(Screen.About.route)
                             }
                         )
-                        // Intent untuk membagikan aplikasi
                         DropdownMenuItem(
                             text = { Text("Share") },
                             onClick = {
@@ -78,15 +81,16 @@ fun HomeScreen(navController: NavController) {
             )
         }
     ) { paddingValues ->
-        // Panggil konten utama layar
+        // Konten utama layar
         HomeScreenContent(
-            modifier = Modifier.padding(paddingValues),
+            modifier = Modifier
+                .padding(paddingValues)
+                .background(MaterialTheme.colorScheme.background),
             inputText = inputText,
             onInputChange = { inputText = it },
             qrBitmap = qrBitmap,
             onGenerateClick = { generateQR() },
             onLogoutClick = {
-                // Saat logout, tampilkan Toast dan arahkan ke halaman login
                 Toast.makeText(context, "Logout Berhasil!", Toast.LENGTH_SHORT).show()
                 navController.navigate(Screen.Login.route) {
                     popUpTo(Screen.Home.route) { inclusive = true }
@@ -96,6 +100,7 @@ fun HomeScreen(navController: NavController) {
     }
 }
 
+// Fungsi utama untuk menampilkan isi layar HomeScreen
 @Composable
 fun HomeScreenContent(
     modifier: Modifier = Modifier,
@@ -105,21 +110,19 @@ fun HomeScreenContent(
     onGenerateClick: () -> Unit,
     onLogoutClick: () -> Unit
 ) {
-    // State untuk menyimpan feedback yang dipilih pengguna
-    var selectedFeedback by remember { mutableStateOf("") }
-
-    // State scroll agar layar bisa digulir
-    val scrollState = rememberScrollState()
+    var selectedFeedback by remember { mutableStateOf("") } // Menyimpan pilihan feedback
+    val scrollState = rememberScrollState() // Mengatur scroll jika konten panjang
 
     Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .background(MaterialTheme.colorScheme.background)
+            .padding(24.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState), // Aktifkan scroll vertikal
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -127,10 +130,10 @@ fun HomeScreenContent(
             Text(
                 text = "Generate QR Code",
                 style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onBackground
             )
 
-            // Card input teks untuk QR
+            // Card untuk input teks dan tombol generate
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.extraLarge,
@@ -141,17 +144,23 @@ fun HomeScreenContent(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Input teks
+                    // Input teks dari user
                     OutlinedTextField(
                         value = inputText,
                         onValueChange = onInputChange,
                         label = { Text("Masukkan teks") },
                         placeholder = { Text("Ketik sesuatu...") },
                         modifier = Modifier.fillMaxWidth(),
-                        shape = MaterialTheme.shapes.medium
+                        shape = MaterialTheme.shapes.medium,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        )
                     )
 
-                    // Tombol untuk generate QR
+                    // Tombol untuk generate QR Code
                     Button(
                         onClick = onGenerateClick,
                         modifier = Modifier
@@ -164,7 +173,7 @@ fun HomeScreenContent(
                 }
             }
 
-            // Card untuk menampilkan hasil QR
+            // Card untuk menampilkan QR Code yang sudah di-generate
             Card(
                 modifier = Modifier
                     .width(220.dp)
@@ -181,7 +190,6 @@ fun HomeScreenContent(
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Jika QR tersedia, tampilkan gambarnya
                     qrBitmap?.let {
                         Image(
                             bitmap = it.asImageBitmap(),
@@ -189,7 +197,7 @@ fun HomeScreenContent(
                             modifier = Modifier.size(170.dp)
                         )
                     } ?: Text(
-                        text = "QR belum dibuat", // Jika belum ada QR
+                        text = "QR belum dibuat",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
@@ -197,40 +205,63 @@ fun HomeScreenContent(
                 }
             }
 
-            // Feedback section: pilih apakah aplikasi bagus atau perlu perbaikan
+            // Form feedback dari pengguna
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Pertanyaan feedback
                 Text(
                     text = "Menurut Anda, apakah aplikasi ini bagus?",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    textAlign = TextAlign.Center
                 )
 
-                // Pilihan feedback menggunakan RadioButton
+                // Baris pilihan feedback dengan ikon dan radio button
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    RadioButton(
-                        selected = selectedFeedback == "Bagus",
-                        onClick = { selectedFeedback = "Bagus" }
-                    )
-                    Text("Bagus")
+                    // Pilihan "Bagus" dengan ikon jempol 👍
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = selectedFeedback == "Bagus",
+                            onClick = { selectedFeedback = "Bagus" }
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.ThumbUp,
+                            contentDescription = "Bagus",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Bagus", color = MaterialTheme.colorScheme.onSurface)
+                    }
 
-                    RadioButton(
-                        selected = selectedFeedback == "Perlu Perbaikan",
-                        onClick = { selectedFeedback = "Perlu Perbaikan" }
-                    )
-                    Text("Perlu Perbaikan")
+                    // Pilihan "Perlu Perbaikan" dengan ikon jempol turun 👎
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = selectedFeedback == "Perlu Perbaikan",
+                            onClick = { selectedFeedback = "Perlu Perbaikan" }
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.ThumbDown,
+                            contentDescription = "Perlu Perbaikan",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Perlu Perbaikan", color = MaterialTheme.colorScheme.onSurface)
+                    }
                 }
             }
 
-            // Tombol Logout
+
+            // Tombol logout dari aplikasi
             ElevatedButton(
                 onClick = onLogoutClick,
                 modifier = Modifier
@@ -238,28 +269,36 @@ fun HomeScreenContent(
                     .height(50.dp),
                 shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.elevatedButtonColors(
-                    containerColor = Color(0xFFFF8A80), // Warna tombol logout
-                    contentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError
                 )
             ) {
                 Text("Logout", fontSize = 18.sp)
             }
 
-            // Spacer untuk memberi ruang di bawah saat di-scroll
+            // Spacer tambahan
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
 
-// Preview tampilan HomeScreenContent (untuk layout editor)
+// Preview tampilan HomeScreen di Android Studio
 @Preview(showSystemUi = true, showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreenContent(
-        inputText = "Contoh QR",
-        onInputChange = {},
-        qrBitmap = null,
-        onGenerateClick = {},
-        onLogoutClick = {}
-    )
+    AppTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            HomeScreenContent(
+                inputText = "Contoh QR",
+                onInputChange = {},
+                qrBitmap = null,
+                onGenerateClick = {},
+                onLogoutClick = {}
+            )
+        }
+    }
 }
