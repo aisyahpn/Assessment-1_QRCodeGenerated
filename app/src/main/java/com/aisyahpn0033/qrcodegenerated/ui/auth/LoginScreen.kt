@@ -28,7 +28,7 @@ fun LoginScreen(navController: NavController) {
     LoginScreenContent(
         onLoginSuccess = {
             // Navigasi ke HomeScreen jika login sukses
-            navController.navigate(Screen.Login.route)
+            navController.navigate(Screen.Home.route)
         },
         onRegisterClick = {
             // Navigasi ke RegisterScreen jika tombol register diklik

@@ -10,6 +10,8 @@ import androidx.navigation.compose.rememberNavController
 import com.aisyahpn0033.qrcodegenerated.ui.auth.LoginScreen
 import com.aisyahpn0033.qrcodegenerated.ui.auth.RegisterScreen
 import com.aisyahpn0033.qrcodegenerated.ui.splash.SplashScreen
+import com.aisyahpn0033.qrcodegenerated.ui.home.HomeScreen
+import com.aisyahpn0033.qrcodegenerated.ui.about.AboutScreen
 
 // Fungsi utama navigasi aplikasi
 @Composable
@@ -33,6 +35,19 @@ fun AppNavigation() {
         composable(Screen.Register.route) {
             RegisterScreen(navController)
         }
+
+
+        // Rute ke AboutScreen
+        composable(Screen.About.route) {
+            AboutScreen(navController)
+        }
+
+        // Rute ke HomeScreen (dengan parameter userName)
+        composable(Screen.Home.route) { backStackEntry ->
+            // Mengambil argument jika ada, tapi tidak digunakan di sini
+            backStackEntry.arguments?.getString("userName") ?: "Guest"
+            HomeScreen(navController)
+        }
     }
 }
 
@@ -48,4 +63,9 @@ sealed class Screen(val route: String) {
     // Register screen route
     data object Register : Screen("register")
 
+    // Home screen route, dengan parameter userName (opsional di sini)
+    data object Home : Screen("home/{userName}")
+
+    // About screen route
+    data object About : Screen("about")
 }
